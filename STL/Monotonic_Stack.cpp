@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <map>
 
 using namespace std;
 
@@ -85,6 +86,66 @@ int largestRectangleArea(vector<int>& heights) {
     return maxArea;
 }
 
+string countOfAtoms(string formula) {
+    stack<pair<string,int>> st;
+    int n = formula.length();
+    for(int i=0;i<formula.length();i++){
+        string atom = "";
+        int repeat = 0;
+        if(formula[i] == '(')
+            st.push(make_pair("(",-1));
+        else if(formula[i] >= 'A' && formula[i] <= 'Z'){
+            atom += formula[i];
+            while(i+1<n && formula[i+1]>='a' && formula[i] <='z'){
+                i++;
+                atom += formula[i];
+            }
+            while(i+1<n && formula[i+1] >= '0' && formula[i+1] <= '9'){
+                i++;
+                int number = formula[i]-'0';
+                repeat = repeat*10 + number;
+            }
+            if(repeat == 0) repeat=1;
+            st.push(make_pair(atom,repeat));
+        }
+        else if(formula[i] == ')'){
+            stack<pair<string,int>> tempStack;
+            repeat = 0;
+            while(i+1<n && formula[i+1] >= '0' && formula[i+1] <= '9'){
+                i++;
+                int number = formula[i]-'0';
+                repeat = repeat*10 + number;
+            }
+            if(repeat == 0) repeat=1;
+            if(repeat>0){
+                while(!st.empty() && st.top().first != "("){
+                    tempStack.push(make_pair(st.top().first,st.top().second*repeat));
+                    st.pop();
+                }
+                if(!st.empty() && st.top().first == "(") st.pop();
+                while(!tempStack.empty()){
+                    st.push(make_pair(tempStack.top().first,tempStack.top().second));
+                    tempStack.pop();
+                }
+            }
+        }
+        else{
+            //digits
+
+        }
+    }
+    map<string,int> mapp;
+    while(!st.empty()){
+        mapp[st.top().first] += st.top().second;
+        st.pop();
+    }
+    string ans = "";
+    for(auto &[atom,freq] : mapp){
+        ans += atom;
+        if (freq > 1) ans += to_string(freq);
+    }
+    return ans;
+}
 // =====================================================
 // MAIN
 // =====================================================
@@ -97,7 +158,7 @@ int main() {
         {2,1,5,6,2,3},         // Histogram -> 10
         {2,1,2},               // Histogram -> 3
         {6,2,5,4,5,1,6},       // Histogram -> 12
-        {1}                    // Histogram -> 1
+        {1}                    // Histogram -> 1 
     };
 
     // Choose any test case
@@ -119,8 +180,11 @@ int main() {
     // printArray(nge);
 
     //-------- 84. Largest Rectangle --------
-    cout << "Largest Rectangle : "
-         << largestRectangleArea(arr) << endl;
+    // cout << "Largest Rectangle : "
+    //      << largestRectangleArea(arr) << endl;
+    
+    countOfAtoms("K4(ON(SO3)2)2");
+    // countOfAtoms("(Cn100)");
 
     return 0;
 }
