@@ -5,9 +5,7 @@
 
 using namespace std;
 
-// =====================================================
 // INPUT FUNCTION
-// =====================================================
 vector<int> inputArray() {
     int n;
     cout << "Enter Size : ";
@@ -22,9 +20,7 @@ vector<int> inputArray() {
     return arr;
 }
 
-// =====================================================
 // OUTPUT FUNCTION
-// =====================================================
 void printArray(const vector<int>& arr) {
     cout << "[ ";
     for (int x : arr)
@@ -32,9 +28,7 @@ void printArray(const vector<int>& arr) {
     cout << "]" << endl;
 }
 
-// =====================================================
 // NEXT GREATER ELEMENT II (Circular)
-// =====================================================
 vector<int> nextGreaterElement(vector<int>& nums) {
     int n = nums.size();
     stack<int> st;
@@ -49,9 +43,7 @@ vector<int> nextGreaterElement(vector<int>& nums) {
     return ans;
 }
 
-// =====================================================
 // 84. LARGEST RECTANGLE IN HISTOGRAM
-// =====================================================
 int largestRectangleArea(vector<int>& heights) {
     int n = heights.size();
     vector<int> NSE(n, n);
@@ -146,6 +138,40 @@ string countOfAtoms(string formula) {
     }
     return ans;
 }
+
+map<char,int> precedenceMap(){
+    map<char,int> precedence;
+    precedence['+'] = 1;
+    precedence['-'] = 1;
+    precedence['*'] = 2;
+    precedence['/'] = 2;
+    precedence['^'] = 3;
+    precedence['('] = -1;
+    return precedence;
+}
+
+string infixToPostfix(string infix){
+    stack<char> st;
+    string ans = "";
+    map<char,int> precedence = precedenceMap();
+    for(int i=0;i<infix.length();i++){
+        if(infix[i] == '(') st.push('(');
+        else if(infix[i]>='A' && infix[i]<='Z'){
+            ans += infix[i];
+        }else{
+            while(!st.empty() && precedence[infix[i]] < precedence[st.top()]){
+                ans += st.top();
+                st.pop();
+            }
+            st.push(infix[i]);
+        }
+    }
+    while(!st.empty()){
+        ans += st.top();
+        st.pop();
+    }
+    return "";
+}
 // =====================================================
 // MAIN
 // =====================================================
@@ -166,25 +192,21 @@ int main() {
 
     // For manual input
     // vector<int> arr = inputArray();
-
-    cout << "Input  : ";
+    cout << "Input  : "; 
     printArray(arr);
 
-    // ==============================
-    // Uncomment ONE problem at a time
-    // ==============================
-
-    // -------- 503. Next Greater Element II --------
     // vector<int> nge = nextGreaterElement(arr);
     // cout << "NGE Output : ";
     // printArray(nge);
 
     //-------- 84. Largest Rectangle --------
-    // cout << "Largest Rectangle : "
-    //      << largestRectangleArea(arr) << endl;
+    // cout << "Largest Rectangle : " << largestRectangleArea(arr) << endl;
     
-    countOfAtoms("K4(ON(SO3)2)2");
-    // countOfAtoms("(Cn100)");
+    //vector<string> molecular("K4(ON(SO3)2)2");
+    //countOfAtoms("K4(ON(SO3)2)2");
+
+    //Infix to Prefix
+    infixToPostfix("A+B*(C^D-E/G)");
 
     return 0;
 }
