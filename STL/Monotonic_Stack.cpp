@@ -1,23 +1,34 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+
 using namespace std;
 
+// =====================================================
+// INPUT FUNCTION
+// =====================================================
 vector<int> inputArray() {
     int n;
     cout << "Enter Size : ";
     cin >> n;
+
     vector<int> arr(n);
+
     cout << "Enter Elements : ";
-    for (int i = 0; i < n; i++) cin >> arr[i];
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
     return arr;
 }
 
+// =====================================================
+// OUTPUT FUNCTION
+// =====================================================
 void printArray(const vector<int>& arr) {
     cout << "[ ";
     for (int x : arr)
         cout << x << " ";
-    cout << "]\n";
+    cout << "]" << endl;
 }
 
 // =====================================================
@@ -38,30 +49,78 @@ vector<int> nextGreaterElement(vector<int>& nums) {
 }
 
 // =====================================================
+// 84. LARGEST RECTANGLE IN HISTOGRAM
+// =====================================================
+int largestRectangleArea(vector<int>& heights) {
+    int n = heights.size();
+    vector<int> NSE(n, n);
+    vector<int> PSE(n, -1);
+    stack<int> st;
+
+    // Next Smaller Element
+    for (int i = n - 1; i >= 0; i--) {
+        while (!st.empty() && heights[i] <= heights[st.top()])
+            st.pop();
+        if (!st.empty())
+            NSE[i] = st.top();
+        st.push(i);
+    }
+
+    while (!st.empty()) st.pop();
+
+    // Previous Smaller Element
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && heights[i] <= heights[st.top()])
+            st.pop();
+        if (!st.empty())
+            PSE[i] = st.top();
+        st.push(i);
+    }
+
+    int maxArea = 0;
+    for (int i = 0; i < n; i++) {
+        int width = NSE[i] - PSE[i] - 1;
+        maxArea = max(maxArea, heights[i] * width);
+    }
+    return maxArea;
+}
+
+// =====================================================
 // MAIN
 // =====================================================
 int main() {
 
-    // ---------- Debug Test Cases ----------
     vector<vector<int>> testCases = {
-        {1, 2, 1},          // Expected: [2, -1, 2]
-        {1, 2, 3, 4, 3}     // Expected: [2, 3, 4, -1, 4]
+        {1,2,1},               // NGE -> [2,-1,2]
+        {1,2,3,4,3},           // NGE -> [2,3,4,-1,4]
+        {2,4},                 // Histogram -> 4
+        {2,1,5,6,2,3},         // Histogram -> 10
+        {2,1,2},               // Histogram -> 3
+        {6,2,5,4,5,1,6},       // Histogram -> 12
+        {1}                    // Histogram -> 1
     };
 
-    // Select test case (change index only)
+    // Choose any test case
     vector<int> arr = testCases[0];
-    // vector<int> arr = testCases[1];
 
-    // For manual input, comment the above line and uncomment below
+    // For manual input
     // vector<int> arr = inputArray();
 
     cout << "Input  : ";
     printArray(arr);
 
-    vector<int> ans = nextGreaterElement(arr);
+    // ==============================
+    // Uncomment ONE problem at a time
+    // ==============================
 
-    cout << "Output : ";
-    printArray(ans);
+    // -------- 503. Next Greater Element II --------
+    // vector<int> nge = nextGreaterElement(arr);
+    // cout << "NGE Output : ";
+    // printArray(nge);
+
+    //-------- 84. Largest Rectangle --------
+    cout << "Largest Rectangle : "
+         << largestRectangleArea(arr) << endl;
 
     return 0;
 }
